@@ -170,6 +170,7 @@ class ReportData:
         success_rate: Percentage of successfully verified lines
         verified_line_numbers: Sorted list of verified line numbers
         results: Complete verification results by line number
+        llvm_version: Version of LLVM used for verification
         metadata: Additional report metadata
     """
     binary_name: str
@@ -183,6 +184,7 @@ class ReportData:
     success_rate: float
     verified_line_numbers: List[int]
     results: Dict[int, LineVerificationEvidence]
+    llvm_version: str
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def to_dict(self) -> Dict[str, Any]:
@@ -191,6 +193,7 @@ class ReportData:
             'binary_name': self.binary_name,
             'source_file_path': str(self.source_file_path) if self.source_file_path else None,
             'timestamp': self.timestamp,
+            'llvm_version': self.llvm_version,
             'statistics': {
                 'total_lines': self.total_lines,
                 'verified_lines': self.verified_lines,
@@ -242,6 +245,7 @@ class AnalysisResult:
         binary_file: Path to the analyzed binary
         line_numbers: List of line numbers found in debug info
         verification_results: Line verification evidence by line number
+        llvm_version: Version of LLVM used for analysis
         report_data: Structured report data
         report_paths: Paths to generated report files
         success: Whether analysis completed successfully
@@ -251,6 +255,7 @@ class AnalysisResult:
     binary_file: Path
     line_numbers: List[int]
     verification_results: Dict[int, LineVerificationEvidence]
+    llvm_version: str = "unknown"
     report_data: Optional[ReportData] = None
     report_paths: Optional[ReportPaths] = None
     success: bool = True
