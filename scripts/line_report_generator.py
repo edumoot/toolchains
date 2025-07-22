@@ -22,13 +22,6 @@ from line_models import (
 )
 
 
-def get_llvm_version():
-    try:
-        result = subprocess.run(['llvm-config', '--version'], capture_output=True, text=True, check=True)
-        return result.stdout.strip()
-    except subprocess.CalledProcessError:
-        return "LLVM version unknown"
-
 class VerificationReportGenerator:
     """
     Generates verification reports from line verification results.
