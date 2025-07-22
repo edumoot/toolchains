@@ -10,14 +10,14 @@ components, both programmatically and through custom workflows.
 from pathlib import Path
 from typing import List, Dict
 
-from models import (
+from line_models import (
     AnalysisResult,
     LineVerificationEvidence,
     VerificationResult
 )
 from line_verifier import DwarfLineTableParser, LLDBLineVerifier, get_llvm_version
-from report_generator import VerificationReportGenerator, SourceFileReportWriter
-from line_table_analyzer import LineTableAnalyzer
+from line_report_generator import VerificationReportGenerator, SourceFileReportWriter
+from line_analyzer import LineTableAnalyzer
 
 
 def example_basic_analysis():
