@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Optional
 
 from line_models import AnalysisResult, LineTableAnalysisError
-from line_verifier import DwarfLineTableParser, LLDBLineVerifier
+from line_verifier import DwarfLineTableParser, LLDBLineVerifier, get_llvm_version
 from line_report_generator import VerificationReportGenerator, SourceFileReportWriter
 
 
@@ -81,6 +81,10 @@ class LineTableAnalyzer:
             Complete analysis result
         """
         try:
+            # Get LLVM version
+            llvm_version = get_llvm_version()
+            print(f"Using LLVM version: {llvm_version}")
+
             # Step 1: Parse DWARF information
             print(f"Parsing DWARF information from {binary_file.name}...")
             self.parser = DwarfLineTableParser(binary_file)
@@ -96,6 +100,7 @@ class LineTableAnalyzer:
                     binary_file=binary_file,
                     line_numbers=[],
                     verification_results={},
+                    llvm_version=llvm_version,
                     success=False,
                     error_message="No line numbers found in debug information"
                 )
@@ -113,7 +118,8 @@ class LineTableAnalyzer:
             report_data = self.report_generator.generate_report(
                 verification_results,
                 binary_name=binary_file.name,
-                source_file_path=source_file
+                source_file_path=source_file,
+                llvm_version=llvm_version
             )
             
             report_content = self.report_generator.format_report(report_data)
@@ -134,6 +140,7 @@ class LineTableAnalyzer:
                 binary_file=binary_file,
                 line_numbers=line_numbers,
                 verification_results=verification_results,
+                llvm_version=llvm_version,
                 report_data=report_data,
                 report_paths=report_paths,
                 success=True
@@ -150,6 +157,7 @@ class LineTableAnalyzer:
                 binary_file=binary_file,
                 line_numbers=[],
                 verification_results={},
+                llvm_version=get_llvm_version(),
                 success=False,
                 error_message=str(e)
             )
