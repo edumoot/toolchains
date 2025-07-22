@@ -25,6 +25,24 @@ from line_models import (
 )
 
 
+def get_llvm_version() -> str:
+    """
+    Get the version of LLVM installed on the system.
+    
+    Returns:
+        LLVM version string or "LLVM version unknown" if detection fails
+    """
+    try:
+        result = subprocess.run(
+            ['llvm-config', '--version'], 
+            capture_output=True, 
+            text=True, 
+            check=True
+        )
+        return result.stdout.strip()
+    except subprocess.CalledProcessError:
+        return "LLVM version unknown"
+
 class DwarfLineTableParser:
     """
     Parses DWARF debug line information from binaries.
