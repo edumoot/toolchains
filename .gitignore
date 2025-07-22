@@ -1,0 +1,6 @@
+# Ignore generated test cases
+generated_tests/
+generated_code/
+# Ignore temporary files
+*.i
+*.o
