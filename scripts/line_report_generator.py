@@ -44,7 +44,8 @@ class VerificationReportGenerator:
     
     def generate_report(self, results: Dict[int, LineVerificationEvidence],
                        binary_name: str,
-                       source_file_path: Optional[Path] = None) -> ReportData:
+                       source_file_path: Optional[Path] = None,
+                       llvm_version: str = "Unknown") -> ReportData:
         """
         Generate a structured verification report.
         
@@ -55,6 +56,7 @@ class VerificationReportGenerator:
             results: Dictionary mapping line numbers to verification evidence
             binary_name: Name of the analyzed binary
             source_file_path: Path to the source file (optional)
+            llvm_version: Version of LLVM used for verification
             
         Returns:
             Structured report data
@@ -73,7 +75,8 @@ class VerificationReportGenerator:
         
         # Create metadata
         metadata = self._create_metadata(
-            binary_name, timestamp, source_file_path, len(verified_line_numbers)
+            binary_name, timestamp, source_file_path, 
+            len(verified_line_numbers), llvm_version
         )
         
         # Build report data
@@ -89,6 +92,7 @@ class VerificationReportGenerator:
             success_rate=stats['success_rate'],
             verified_line_numbers=verified_line_numbers,
             results=results,
+            llvm_version=llvm_version,
             metadata=metadata
         )
         
@@ -160,12 +164,13 @@ class VerificationReportGenerator:
     
     def _create_metadata(self, binary_name: str, timestamp: str,
                         source_file_path: Optional[Path],
-                        verified_count: int) -> Dict[str, Any]:
+                        verified_count: int, llvm_version: str) -> Dict[str, Any]:
         """Create report metadata."""
         metadata = {
             'binary_name': binary_name,
             'timestamp': timestamp,
             'generation_time': datetime.now().isoformat(),
+            'llvm_version': llvm_version,
             'verified_line_count': verified_count,
             'include_metadata': self.include_metadata
         }
@@ -192,6 +197,7 @@ class VerificationReportGenerator:
             "-" * 18,
             f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
             f"Binary Name: {report_data.binary_name}",
+            f"LLVM Version: {report_data.llvm_version}",
         ]
         
         if report_data.source_file_path:
