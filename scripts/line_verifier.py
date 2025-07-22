@@ -15,7 +15,7 @@ import time
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
-from models import (
+from line_models import (
     BinaryParsingError,
     FileTableEntry,
     LineTableEntry,
