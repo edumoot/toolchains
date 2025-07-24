@@ -57,7 +57,7 @@ clang -g -O3 example.c -o example
 python line_analyzer.py example.c example
 ```
 
-## 📖 Documentation
+## Documentation
 
 ### Command Line Interface
 
@@ -119,7 +119,7 @@ line-table-analyzer/
 4. **SourceFileReportWriter**: Writes reports as comments in source files
 5. **LineTableAnalyzer**: Orchestrates the complete analysis workflow
 
-## 📊 Report Format
+## Report Format
 
 The analyzer generates comprehensive reports including:
 
@@ -161,7 +161,7 @@ The analyzer generates comprehensive reports including:
  */
 ```
 
-## 🔧 Programmatic Usage
+## Programmatic Usage
 
 The analyzer can be used as a library in your own Python scripts:
 
