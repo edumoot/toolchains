@@ -83,15 +83,12 @@ class LineTableAnalyzer:
         try:
             # Get LLVM version
             llvm_version = get_llvm_version()
-            print(f"Using LLVM version: {llvm_version}")
 
             # Step 1: Parse DWARF information
-            print(f"Parsing DWARF information from {binary_file.name}...")
             self.parser = DwarfLineTableParser(binary_file)
             self.parser.parse()
             
             # Step 2: Extract line numbers
-            print(f"Extracting line numbers for {source_file.name}...")
             line_numbers = self.parser.get_line_numbers(str(source_file))
             
             if not line_numbers:
@@ -105,27 +102,21 @@ class LineTableAnalyzer:
                     error_message="No line numbers found in debug information"
                 )
             
-            print(f"Found {len(line_numbers)} line numbers to verify")
-            
             # Step 3: Verify lines
-            print("Verifying line numbers using LLDB...")
             verification_results = self.verifier.verify_lines(
                 source_file, binary_file, line_numbers
             )
             
             # Step 4: Generate report
-            print("Generating verification report...")
             report_data = self.report_generator.generate_report(
                 verification_results,
                 binary_name=binary_file.name,
                 source_file_path=source_file,
                 llvm_version=llvm_version
             )
-            
             report_content = self.report_generator.format_report(report_data)
             
             # Step 5: Write results
-            print("Writing report to source file...")
             report_paths = self.report_writer.write_report(
                 report_content,
                 source_file_path=source_file,
@@ -169,14 +160,17 @@ class LineTableAnalyzer:
         print("=" * 50)
         
         if result.report_data:
+            print(f"LLVM version: {result.llvm_version}")
             print(f"Binary: {result.report_data.binary_name}")
             print(f"Source: {result.source_file.name}")
+            print(f"Total lines in line table: {len(result.line_numbers)}")
             print(f"Total lines tested: {result.report_data.total_lines}")
             print(f"Successfully verified: {result.report_data.verified_lines}")
             print(f"Success rate: {result.report_data.success_rate:.1f}%")
             
             if result.report_data.verified_line_numbers:
-                print(f"\nVerified lines: {result.report_data.verified_line_numbers}")
+                print(f"\nLines found in line table:  {result.line_numbers}")
+                print(f"\nVerified line numbers:  {result.report_data.verified_line_numbers}")
         
         if result.report_paths:
             print("\nGenerated files:")
