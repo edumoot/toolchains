@@ -272,6 +272,16 @@ class AnalysisResult:
         """Count of verification errors."""
         return sum(1 for evidence in self.verification_results.values() 
                   if evidence.result == VerificationResult.ERROR)
+    
+    @property
+    def verified_line_numbers(self) -> List[int]:
+        """Get list of line numbers that were successfully verified."""
+        if self.report_data:
+            return self.report_data.verified_line_numbers
+        return sorted([
+            line_num for line_num, evidence in self.verification_results.items() 
+                if evidence.result == VerificationResult.VERIFIED
+        ])
 
 
 class LineTableAnalysisError(Exception):
