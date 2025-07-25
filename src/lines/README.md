@@ -28,7 +28,7 @@ A comprehensive tool for analyzing and verifying DWARF debug line table informat
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/edumoot/lines.git
+git clone https://github.com/edumoot/toolchains/src/lines.git
 cd lines
 ```
 
@@ -55,6 +55,38 @@ clang -g -O3 example.c -o example
 
 # Run the analyzer
 python line_analyzer.py example.c example
+```
+
+## Understanding the Output
+The analyzer provides clear distinction between:
+
+**Lines found in line table**: All line numbers that have debug information
+**Verified line numbers**: Lines that were successfully hit during execution
+
+Example output:
+
+```c
+/*
+*  ==================================================
+*  ANALYSIS SUMMARY
+*  ==================================================
+*  LLVM version: 17.0.6
+*  Binary: example
+*  Source: example.c
+*  Total lines in debug info: 42
+*  Total lines tested: 42
+*  Successfully verified: 38
+*  Success rate: 90.5%
+*
+*  Lines found in debug info: [10, 12, 13, 15, 18, 20, 22, 25, 27, 30, 32, 35, 38, 40, 42, 45, 48, 50, 52, 55, ...]
+*
+*  Verified line numbers: [10, 12, 13, 15, 18, 20, 22, 25, 27, 30, 32, 35, 38, 40, 42, ...]
+*
+*  Generated files:
+*    Modified source: example.c
+*    Backup: example.backup_20240115_143245.c
+*  ==================================================
+*/
 ```
 
 ## Documentation
@@ -87,7 +119,7 @@ python line_analyzer.py \
     --timeout 60 \
     --comment-style line \
     --output-dir reports/ \
-    src/complex.cpp build/complex
+    src/complex.c build/complex.out
 ```
 
 #### Batch Processing
@@ -187,6 +219,10 @@ result = analyzer.analyze(
 if result.success:
     print(f"Verified {result.verified_count} lines")
     print(f"Success rate: {result.report_data.success_rate:.1f}%")
+
+    # Get verified line numbers directly
+    verified_lines = result.verified_line_numbers
+    print(f"Verified lines: {verified_lines}")
 ```
 
 ### Using Components Separately
@@ -208,6 +244,11 @@ results = verifier.verify_lines(
     line_numbers[:10]  # Verify first 10 lines only
 )
 
+# Check which lines were verified
+verified = [line for line, evidence in results.items() 
+           if evidence.result == VerificationResult.VERIFIED]
+print(f"Verified lines: {verified}")
+
 # Generate custom report
 generator = VerificationReportGenerator()
 report_data = generator.generate_report(
@@ -217,17 +258,24 @@ report_data = generator.generate_report(
 )
 ```
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-### Development Setup
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## Output Interpretation
+### Line Number Categories
+1. **Lines found in line table**: All line numbers that have DWARF debug information
+- These are the lines the debugger knows about
+- Extracted using `llvm-dwarfdump --debug-line`
+2. **Verified line numbers**: Lines that were successfully hit during execution
+- These lines had valid breakpoints set
+- The program actually executed these lines
+- Confirmed using LLDB
+3. **Invalid breakpoints**: Lines where breakpoints couldn't be set
+- Often due to optimization
+- May indicate dead code elimination
+4. **Not hit**: Lines with valid breakpoints that weren't executed
+- May indicate unreachable code
+- Could be error handling or conditional code
+5. Errors: Lines where verification failed
+- Could be due to line number mismatches
+- May indicate debug info corruption
 
 ### Coding Standards
 
