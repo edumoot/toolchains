@@ -54,6 +54,7 @@ class LineVerificationEvidence:
         breakpoint_id: LLDB breakpoint identifier
     """
     line_number: int
+    column_number: Optional[int] = None
     result: VerificationResult
     hit_count: int = 0
     actual_address: Optional[str] = None
@@ -61,6 +62,7 @@ class LineVerificationEvidence:
     hit_timestamp: Optional[float] = None
     source_file: Optional[str] = None
     actual_line_hit: Optional[int] = None
+    acutal_column_hit: Optional[int] = None
     actual_file_hit: Optional[str] = None
     function_name: Optional[str] = None
     breakpoint_id: Optional[int] = None
@@ -69,6 +71,7 @@ class LineVerificationEvidence:
         """Convert evidence to dictionary for serialization."""
         return {
             'line_number': self.line_number,
+            'column': self.column_number,
             'result': self.result.value,
             'hit_count': self.hit_count,
             'actual_address': self.actual_address,
@@ -76,6 +79,7 @@ class LineVerificationEvidence:
             'hit_timestamp': self.hit_timestamp,
             'source_file': self.source_file,
             'actual_line_hit': self.actual_line_hit,
+            'actual_column_hit': self.acutal_column_hit,
             'actual_file_hit': self.actual_file_hit,
             'function_name': self.function_name,
             'breakpoint_id': self.breakpoint_id
